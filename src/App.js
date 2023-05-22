@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import AppNavBar from "./pages/Nav/Nav"
+import Home from "./pages/Home/Home"
+import LoginSignUp from "./pages/LoginSignUp/LoginSignUp"
+import JobList from "./pages/JobList/JobList"
+import NoPage from "./pages/NoPage"
+import JobForm from "./pages/CreateJob/CreateJob"
+import { useState } from "react"
 
-function App() {
+export default function App() {
+
+  let [userType, setUserType] = useState(undefined)
+
+  const updateUserType = (type) => setUserType(type)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AppNavBar updateUserType={updateUserType} userType={userType} />}>
+          <Route index element={<LoginSignUp updateUserType={updateUserType} />} />
+          <Route path="home" element={<Home />} />
+          <Route path="jobs" element={<JobList />} />
+          <Route path="specialJobs" element={<JobList />} />
+          <Route path="createJob" element={<JobForm />} />
+          <Route path="*" element={<NoPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  )
 }
-
-export default App;
