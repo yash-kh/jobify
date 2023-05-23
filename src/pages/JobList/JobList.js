@@ -1,14 +1,13 @@
 import { Container, Row, Col, ListGroup, Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import { getAllJobs, getAppliedByPage, getAppliedJobs, getJobsByPage } from '../../services/JobService';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const JobList = ({type}) => {
 
   const [lastPage, setLastPage] = useState(1)
   const [totalPage, setTotalPage] = useState(0)
-  const [jobs, setJobs] = useState([
-  ])
+  const [jobs, setJobs] = useState([])
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -6,13 +6,14 @@ import JobList from "./pages/JobList/JobList"
 import NoPage from "./pages/NoPage"
 import JobForm from "./pages/CreateJob/CreateJob"
 import { useState } from "react"
+import UpdateProfile from "./pages/updateProfile/UpdateProfile"
+import { PostedJob } from "./pages/PostedJob/PostedJob"
 
 export default function App() {
 
-  let [userType, setUserType] = useState(localStorage.getItem('currentUser'))
-
+  let [userType, setUserType] = useState(localStorage.getItem('currentUser'));
   const updateUserType = (type) => setUserType(type)
-
+  
   return (
     <BrowserRouter>
       <Routes>
@@ -22,7 +23,9 @@ export default function App() {
           <Route path="jobs" Component={(props) => <JobList {...props} /> } />
           <Route path="specialJobs" Component={(props) => <JobList type="specialJobs" {...props} /> } />
           <Route path="appliedJobs" Component={(props) => <JobList type="appliedJobs" {...props} /> } />
+          <Route path="postedJobs" element={<PostedJob/>} />
           <Route path="createJob" element={<JobForm />} />
+          <Route path="updateProfile" element={<UpdateProfile />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>

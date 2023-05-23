@@ -14,3 +14,6 @@ export const loginUser = (data) => {
 export const logoutUser = () => {
     return axios.post(apiUrl + '/logout', null, {withCredentials:true})
 }
+export const getJobs = () => {
+    return axios.get(apiUrl + '/jobs',{withCredentials:true})
+}
