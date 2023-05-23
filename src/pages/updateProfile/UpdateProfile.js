@@ -1,28 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { getAllSkills } from '../../services/JobService';
+import { updateProfile } from '../../services/infoUpdate';
 
 const UpdateProfile = () => {
 
+    const [allSkills, setAllSkills] = useState([])
 
 
-    const allSkills = [
-        { value: 'chocolate', label: 'Chocolate' },
-        { value: 'strawberry', label: 'Strawberry' },
-        { value: 'vanilla', label: 'Vanilla' }
-    ];
+    useEffect(() => {
+        getAllSkills().then((res) => {
+            let skills = []
+            res.data.skills.forEach((item) => {
+                skills.push({ value: item.id })
+            })
+            setAllSkills(skills)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }, [])
 
-    const [formData, setFormData] = useState({
-        current_employer: '',
-        location: '',
-        designation: '',
-        total_experience: '',
-        notice_period: '',
-        current_salary: '',
-        exp_salary: '',
-        skills: [],
-
-    });
 
     const [formErrors, setFormErrors] = useState({});
 
@@ -30,7 +28,7 @@ const UpdateProfile = () => {
         const { name, value } = e.target;
 
         // Validate numeric fields
-        if (name === 'total_experience' || name === 'current_salary' || name === 'exp_salary') {
+        if (name === 'total_experience' || name === 'current_salary' || name === 'exp_salary' || name === "notice_period") {
             // Check if the value is a valid positive number
             if (isNaN(value) || Number(value) < 0) {
                 setFormErrors((prevFormErrors) => ({
@@ -58,7 +56,19 @@ const UpdateProfile = () => {
             }));
         }
     };
-
+    const resetForm = () => {
+        return {
+            current_employer: '',
+            location: '',
+            designation: '',
+            total_experience: '',
+            notice_period: '',
+            current_salary: '',
+            exp_salary: '',
+            skills :''
+        }
+    };
+    const [formData, setFormData] = useState(resetForm());
 
 
     const setUserChoice = (choice) => {
@@ -80,16 +90,25 @@ const UpdateProfile = () => {
         // Handle form submission logic here
         console.log(formData);
         // Reset the form fields
-        setFormData({
-            current_employer: '',
-            location: '',
-            designation: '',
-            total_experience: '',
-            notice_period: '',
-            current_salary: '',
-            exp_salary: '',
-            skills: [],
-        });
+        let data = {
+            "current_employer": formData.current_employer,
+            "location": formData.location,
+            "designation": formData.designation,
+            "total_experience": formData.total_experience,
+            "notice_period": formData.notice_period,
+            "current_salary": formData.current_salary,
+            "exp_salary": formData.exp_salary,
+            "skills": [],
+        };
+        formData.skills.forEach(item => data.skills.push(item.value))
+        updateProfile(data).then(() => {
+            setFormData({ ...data })
+            alert("Profile Updated successfully!!!")            // Reset the form fields
+            setFormData(resetForm())
+        }).catch((err) => {
+            console.log(err)
+            setAllSkills('Something went wrong')
+        })
         setFormErrors({});
         // }
     };
@@ -113,7 +132,7 @@ const UpdateProfile = () => {
 
     return (
         <Container>
-            <h1 className="py-4 px-1">Add Job</h1>
+            <h1 className="py-4 px-1">Update Profile</h1>
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="title">
                     <Form.Label>Current Employer</Form.Label>
@@ -176,6 +195,17 @@ const UpdateProfile = () => {
 
                     </Select>
 
+                </Form.Group>
+                <Form.Group controlId="notice_period">
+                    <Form.Label>Notice Period (Days)</Form.Label>
+                    <Form.Control
+                        type="number"
+                        name="notice_period"
+                        value={formData.notice_period}
+                        onChange={handleChange}
+                        isInvalid={formErrors.notice_period}
+                        required
+                    />
                 </Form.Group>
 
 

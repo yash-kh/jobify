@@ -22,3 +22,11 @@ export const getJobsByPage = (pageNO, data) => {
 export const applyByJobId = (id) => {
     return axios.post(apiUrl + '/job/apply/' + id, null, {withCredentials:true})
 }
+
+export const getJobsPostedByRecruiter = (data) => {
+    return axios.get(apiUrl + '/job/posts' , { withCredentials: true, data })
+}
+
+export const updateJobStatus = (id,data) => {
+    return axios.patch(apiUrl + '/job/update_status/'+ id, data, { withCredentials: true })
+}

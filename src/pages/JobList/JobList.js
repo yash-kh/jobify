@@ -1,23 +1,36 @@
 import { Container, Row, Col, ListGroup, Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import { getAllJobs, getJobsByPage } from '../../services/JobService';
+import { getAllJobs, getJobsByPage, getJobsPostedByRecruiter } from '../../services/JobService';
 import { Link, useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 
-const JobList = () => {
+const JobList = (props) => {
 
   const [lastPage, setLastPage] = useState(1)
   const [totalPage, setTotalPage] = useState(0)
-  const [jobs, setJobs] = useState([
-  ])
+  const [jobs, setJobs] = useState([])
   const navigate = useNavigate();
+  const status = [
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' }
+  ];
+
+  const handleChange = (selectedOption, jobId) => {
+    setJobs(prevJobs =>
+      prevJobs.map(job =>
+        job.id === jobId ? { ...job, status: selectedOption.value } : job
+      )
+    );
+  };
 
   useEffect(() => {
+    
     getAllJobs().then((res) => {
       setJobs(res.data.jobs.data)
       setTotalPage(res.data.jobs.last_page)
       console.log(res.data.jobs)
       console.log(totalPage, lastPage)
-    })
+    }) 
   }, []);
 
   const loadMore = () => {
