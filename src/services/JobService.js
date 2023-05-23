@@ -19,6 +19,14 @@ export const getJobsByPage = (pageNO, data) => {
     return axios.get(apiUrl + '/jobs?page=' + pageNO, {withCredentials:true,data})
 }
 
+export const getAppliedJobs = (data) => {
+    return axios.get(apiUrl + '/job/applied',{withCredentials:true,data})
+}
+
+export const getAppliedByPage = (pageNO, data) => {
+    return axios.get(apiUrl + '/job/applied?page=' + pageNO, {withCredentials:true,data})
+}
+
 export const applyByJobId = (id) => {
     return axios.post(apiUrl + '/job/apply/' + id, null, {withCredentials:true})
 }

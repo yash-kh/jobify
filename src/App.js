@@ -19,8 +19,9 @@ export default function App() {
         <Route path="/" element={<AppNavBar updateUserType={updateUserType} userType={userType} />}>
           <Route index element={<LoginSignUp updateUserType={updateUserType} />} />
           <Route path="jobDetails" element={<JobDetails />} />
-          <Route path="jobs" element={<JobList />} />
-          <Route path="specialJobs" element={<JobList />} />
+          <Route path="jobs" Component={(props) => <JobList {...props} /> } />
+          <Route path="specialJobs" Component={(props) => <JobList type="specialJobs" {...props} /> } />
+          <Route path="appliedJobs" Component={(props) => <JobList type="appliedJobs" {...props} /> } />
           <Route path="createJob" element={<JobForm />} />
           <Route path="*" element={<NoPage />} />
         </Route>
