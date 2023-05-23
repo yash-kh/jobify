@@ -3,17 +3,18 @@ import Select from 'react-select';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { getAllSkills } from '../../services/JobService';
 import { updateProfile } from '../../services/infoUpdate';
+import { useNavigate } from 'react-router-dom';
 
 const UpdateProfile = () => {
 
     const [allSkills, setAllSkills] = useState([])
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         getAllSkills().then((res) => {
             let skills = []
             res.data.skills.forEach((item) => {
-                skills.push({ value: item.id })
+                skills.push({ value: item.id, label: item.skill })
             })
             setAllSkills(skills)
         }).catch((err) => {
@@ -72,10 +73,9 @@ const UpdateProfile = () => {
 
 
     const setUserChoice = (choice) => {
-        const selectedValues = choice.map((option) => option.value);
         setFormData((prevFormData) => ({
             ...prevFormData,
-            'skills': selectedValues.filter(Boolean)
+            'skills': choice
         }));
         setFormErrors((prevFormErrors) => ({
             ...prevFormErrors,
@@ -105,30 +105,31 @@ const UpdateProfile = () => {
             setFormData({ ...data })
             alert("Profile Updated successfully!!!")            // Reset the form fields
             setFormData(resetForm())
+            navigate('/specialJobs')
         }).catch((err) => {
             console.log(err)
-            setAllSkills('Something went wrong')
+            alert('Something went wrong')
         })
         setFormErrors({});
         // }
     };
 
-    const isFormValid = () => {
-        const errors = {};
+    // const isFormValid = () => {
+    //     const errors = {};
 
-        Object.entries(formData).forEach(([key, value]) => {
-            if (key === 'skills' && !value) {
-                errors[key] = true;
-            }
-            if (key !== 'current_salary' && key !== 'exp_salary' && key !== 'skills' && value.trim() === '') {
-                errors[key] = true;
-            }
-        });
+    //     Object.entries(formData).forEach(([key, value]) => {
+    //         if (key === 'skills' && !value) {
+    //             errors[key] = true;
+    //         }
+    //         if (key !== 'current_salary' && key !== 'exp_salary' && key !== 'skills' && value.trim() === '') {
+    //             errors[key] = true;
+    //         }
+    //     });
 
-        setFormErrors(errors);
+    //     setFormErrors(errors);
 
-        return Object.keys(errors).length === 0;
-    };
+    //     return Object.keys(errors).length === 0;
+    // };
 
     return (
         <Container>
@@ -186,8 +187,7 @@ const UpdateProfile = () => {
                     <Select
                         name="skills"
                         isMulti
-                        value={allSkills.filter((option) => formData.skills.includes(option.value))}
-                        onChange={setUserChoice}
+                        onChange={(choice) => setUserChoice(choice)}
                         isInvalid={formErrors.skills}
                         required
                         options={allSkills}

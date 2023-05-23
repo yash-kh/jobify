@@ -1,6 +1,6 @@
 import { Container, Row, Col, ListGroup, Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import { getAllJobs, getAppliedByPage, getAppliedJobs, getJobsByPage } from '../../services/JobService';
+import { getAllJobs, getAppliedByPage, getAppliedJobs, getJobsByPage, getRecomendedJobs } from '../../services/JobService';
 import { useNavigate } from 'react-router-dom';
 
 const JobList = ({type}) => {
@@ -13,26 +13,23 @@ const JobList = ({type}) => {
   useEffect(() => {
     if(type === 'appliedJobs'){      
       getAppliedJobs().then((res) => {
-        console.log(res)
-        console.log(totalPage, lastPage)
         setJobs(res.data.applications.data)
         setTotalPage(res.data.applications.last_page)
       })
     }
     if(type === 'specialJobs'){      
-      getAppliedJobs().then((res) => {
-        console.log(res)
-        console.log(totalPage, lastPage)
-        setJobs(res.data.applications.data)
-        setTotalPage(res.data.applications.last_page)
+      getRecomendedJobs().then((res) => {
+        setJobs(res.data.jobs)
+        setTotalPage(1)
+      }).catch((err)=>{
+        alert('Update profile details to see recomeded jobs!')
+        navigate('/updateProfile')
       })
     }
     else{
       getAllJobs().then((res) => {
         setJobs(res.data.jobs.data)
         setTotalPage(res.data.jobs.last_page)
-        console.log(res.data.jobs)
-        console.log(totalPage, lastPage)
       })
     }
   }, []);
@@ -45,16 +42,12 @@ const JobList = ({type}) => {
       getAppliedByPage(page).then((res) => {
         let job = [...jobs]
         job.push(...res.data.applications.data)
-        console.log(res.data.applications)
-        console.log(job)
         setJobs(job)
       })
     }else{
       getJobsByPage(page).then((res) => {
         let job = [...jobs]
         job.push(...res.data.jobs.data)
-        console.log(res.data.jobs)
-        console.log(job)
         setJobs(job)
       })
     }
