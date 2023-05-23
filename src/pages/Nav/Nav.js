@@ -1,13 +1,29 @@
-import { Outlet, Link } from "react-router-dom"
+import { Outlet, Link, useNavigate } from "react-router-dom"
 import Container from 'react-bootstrap/Container'
 import Nav from 'react-bootstrap/Nav'
 import Navbar from 'react-bootstrap/Navbar'
 import NavDropdown from 'react-bootstrap/NavDropdown'
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
+import { logoutUser } from "../../services/LoginService"
+// import Button from 'react-bootstrap/Button'
+// import Form from 'react-bootstrap/Form'
 
 
 const AppNavBar = ({ updateUserType, userType }) => {
+    const navigate = useNavigate()
+
+    const logout = () =>{
+        logoutUser().then(()=>{
+            updateUserType(undefined)
+            localStorage.removeItem('')
+            navigate('/')
+        }).catch((err)=>{
+            console.log(err)
+            updateUserType(undefined)
+            localStorage.removeItem('')
+            navigate('/')
+        })
+    }
+
     return (
         <>
             <Navbar bg="dark" variant="dark" expand="lg">

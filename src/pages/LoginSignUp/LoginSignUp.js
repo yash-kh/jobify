@@ -32,14 +32,9 @@ const LoginSignUp = ({updateUserType}) => {
       "role": isRecruiter ? "recruiter" : "candidate"
     }
     loginUser(reqObj).then((res)=>{
-      console.log(res)
-      // updateUserType(res.data.data.role)
-      if (isRecruiter) {
-        localStorage.setItem('userType', 'recruiter');
-      } else {
-        localStorage.setItem('userType', 'candidate');
-      }
-      navigate('/home')
+      localStorage.setItem('currentUser',isRecruiter ? "recruiter" : "candidate")
+      updateUserType(res.data.data.role)
+      isRecruiter ? navigate('/home') : navigate('/jobs')
     }).catch(()=>{
       setDisplayError("Invalid Credentials!")
     })
@@ -57,11 +52,12 @@ const LoginSignUp = ({updateUserType}) => {
       "role" : isRecruiter ? "recruiter" : "candidate"
     }
     registerUser(reqObj).then((res)=>{
-      console.log(res.data)
+      console.log(res)
+      localStorage.setItem('currentUser',isRecruiter ? "recruiter" : "candidate")
       updateUserType(res.data.data.role)
-      navigate('/home')
-    }).catch((err)=>{
-      setDisplayError(err.message)
+      isRecruiter ? navigate('/home') : navigate('/jobs')
+    }).catch(()=>{
+      setDisplayError("Email already exist!")
     })
   }
 

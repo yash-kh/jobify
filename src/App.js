@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import AppNavBar from "./pages/Nav/Nav"
-import Home from "./pages/Home/Home"
+import JobDetails from "./pages/JobDetails/JobDetails"
 import LoginSignUp from "./pages/LoginSignUp/LoginSignUp"
 import JobList from "./pages/JobList/JobList"
 import NoPage from "./pages/NoPage"
@@ -22,7 +22,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<AppNavBar updateUserType={updateUserType} userType={userType} />}>
           <Route index element={<LoginSignUp updateUserType={updateUserType} />} />
-          <Route path="home" element={<Home />} />
+          <Route path="jobDetails" element={<JobDetails />} />
           <Route path="jobs" element={<JobList />} />
           <Route path="specialJobs" element={<JobList />} />
           <Route path="postedJobs" element={<JobList userType={userType} />} />

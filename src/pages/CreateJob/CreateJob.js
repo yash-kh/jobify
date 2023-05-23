@@ -1,30 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { createJob, getAllSkills } from '../../services/JobService';
 
 const JobForm = () => {
 
-
-
     const [allSkills, setAllSkills] = useState([
-        { value: 'chocolate', label: 'Chocolate' },
-        { value: 'strawberry', label: 'Strawberry' },
-        { value: 'vanilla', label: 'Vanilla' }
-    ]);
+        // { value: 'chocolate', label: 'Chocolate' },
+        // { value: 'strawberry', label: 'Strawberry' },
+        // { value: 'vanilla', label: 'Vanilla' }
+    ])
 
-    const [formData, setFormData] = useState({
-        title: '',
-        description: '',
-        company: '',
-        skills: '',
-        location: '',
-        minSalary: '',
-        maxSalary: '',
-        minExperience: '',
-        maxExperience: ''
-    });
+    useEffect(() => {
+        getAllSkills().then((res) => {
+            let skills = []
+            res.data.skills.forEach((item) => {
+                skills.push({ value: item.id, label: item.skill })
+            })
+            setAllSkills(skills)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }, [])
+
+    const resetForm = () => {
+        return {
+            title: '',
+            description: '',
+            company: '',
+            skills: '',
+            notice: '',
+            location: '',
+            minSalary: '',
+            maxSalary: '',
+            minExperience: '',
+            maxExperience: ''
+        }
+    };
+
+    const [formData, setFormData] = useState(resetForm());
 
     const [formErrors, setFormErrors] = useState({});
+    const [displayError, setDisplayError] = useState(undefined);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -53,19 +70,29 @@ const JobForm = () => {
         e.preventDefault();
         if (isFormValid()) {
             // Handle form submission logic here
-            console.log(formData);
-            // Reset the form fields
-            setFormData({
-                title: '',
-                description: '',
-                company: '',
-                skills: '',
-                location: '',
-                minSalary: '',
-                maxSalary: '',
-                minExperience: '',
-                maxExperience: ''
-            });
+            let reqObj = {
+                "title": formData.title,
+                "description": formData.description,
+                "company": formData.company,
+                "requirements": "na",
+                "location": formData.location,
+                "min_salary": formData.minSalary,
+                "max_salary": formData.maxSalary,
+                "min_exp": formData.minExperience,
+                "max_exp": formData.maxExperience,
+                "notice": formData.notice,
+                "status": "active",
+                "skillIds": []
+            }
+            formData.skills.forEach(item => reqObj.skillIds.push(item.value))
+            createJob(reqObj).then(() => {
+                setDisplayError('Job added succesfully!')
+                // Reset the form fields
+                setFormData(resetForm())
+            }).catch((err) => {
+                console.log(err)
+                setAllSkills('Something went wrong')
+            })
             setFormErrors({});
         }
     };
@@ -127,7 +154,8 @@ const JobForm = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="skills">
+                <Form.Group controlId="skills"
+                    className='mb-1'>
                     <Form.Label>Skills</Form.Label>
                     <Select
                         name="skills"
@@ -138,22 +166,40 @@ const JobForm = () => {
                         required options={allSkills} />
                 </Form.Group>
 
-                <Form.Group controlId="location">
-                    <Form.Label>Location</Form.Label>
-                    <Form.Control
-                        type="text"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        isInvalid={formErrors.location}
-                        required
-                    />
-                </Form.Group>
+                <Row>
+                    <Col>
+                        <Form.Group controlId="location">
+                            <Form.Label>Location</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="location"
+                                value={formData.location}
+                                onChange={handleChange}
+                                isInvalid={formErrors.location}
+                                required
+                            />
+                        </Form.Group>
+                    </Col>
+
+                    <Col>
+                        <Form.Group controlId="location">
+                            <Form.Label>Notice Period</Form.Label>
+                            <Form.Control
+                                type="number"
+                                name="notice"
+                                value={formData.notice}
+                                onChange={handleChange}
+                                isInvalid={formErrors.notice}
+                                required
+                            />
+                        </Form.Group>
+                    </Col>
+                </Row>
 
                 <Row>
                     <Col>
                         <Form.Group controlId="minSalary">
-                            <Form.Label>Minimum Salary</Form.Label>
+                            <Form.Label>Minimum Salary (LPA)</Form.Label>
                             <Form.Control
                                 type="number"
                                 name="minSalary"
@@ -169,7 +215,7 @@ const JobForm = () => {
                     </Col>
                     <Col>
                         <Form.Group controlId="maxSalary">
-                            <Form.Label>Maximum Salary</Form.Label>
+                            <Form.Label>Maximum Salary (LPA)</Form.Label>
                             <Form.Control
                                 type="number"
                                 name="maxSalary"
@@ -220,7 +266,11 @@ const JobForm = () => {
                     </Col>
                 </Row>
 
-                <Button className='my-3' variant="primary" type="submit">
+                <Row className='mt-2'>
+                    {displayError ? <span>{displayError}</span> : null}
+                </Row>
+
+                <Button className='my-2' variant="primary" type="submit">
                     Submit
                 </Button>
             </Form>
