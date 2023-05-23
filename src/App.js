@@ -9,7 +9,7 @@ import { useState } from "react"
 
 export default function App() {
 
-  let [userType, setUserType] = useState(undefined)
+  let [userType, setUserType] = useState(localStorage.getItem('currentUser'))
 
   const updateUserType = (type) => setUserType(type)
 

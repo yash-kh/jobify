@@ -1,13 +1,35 @@
-import { Container, Row, Col, ListGroup } from 'react-bootstrap';
+import { Container, Row, Col, ListGroup, Button } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { getAllJobs, getJobsByPage } from '../../services/JobService';
 
 const JobList = () => {
-  const jobs = [
-    { id: 1, title: 'Software Engineer', company: 'Microsoft' },
-    { id: 2, title: 'Product Manager', company: 'Amazon' },
-    { id: 3, title: 'Data Analyst', company: 'Google' },
-    { id: 4, title: 'UX Designer', company: 'Facebook' },
-    { id: 5, title: 'Marketing Manager', company: 'Apple' }
-  ];
+
+  const [lastPage, setLastPage] = useState(1)
+  const [totalPage, setTotalPage] = useState(0)
+  const [jobs, setJobs] = useState([
+  ])
+
+  useEffect(() => {
+    getAllJobs().then((res) => {
+      setJobs(res.data.jobs.data)
+      setTotalPage(res.data.jobs.last_page)
+      console.log(res.data.jobs)
+      console.log(totalPage, lastPage)
+    })
+  }, []);
+
+  const loadMore = () => {
+    let page = lastPage 
+    page++
+    setLastPage(page)
+    getJobsByPage(page).then((res) => {
+      let job = [...jobs]
+      job.push(...res.data.jobs.data)
+      console.log(res.data.jobs)
+      console.log(job)
+      setJobs(job)
+    })
+  }
 
   return (
     <Container>
@@ -24,6 +46,18 @@ const JobList = () => {
           </ListGroup>
         </Col>
       </Row>
+      {totalPage ? <Row className="justify-content-md-center">
+        <Col className='text-center my-3' md={3}>
+          {totalPage !== lastPage ? <Button
+            variant="outline-primary"
+            onClick={loadMore}
+          >
+            Load More
+          </Button> :
+            <span>Thats all foks!</span>
+          }
+        </Col>
+      </Row> : null}
     </Container>
   );
 }
