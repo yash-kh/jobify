@@ -19,7 +19,16 @@ const JobList = ({type}) => {
         setJobs(res.data.applications.data)
         setTotalPage(res.data.applications.last_page)
       })
-    }else{
+    }
+    if(type === 'specialJobs'){      
+      getAppliedJobs().then((res) => {
+        console.log(res)
+        console.log(totalPage, lastPage)
+        setJobs(res.data.applications.data)
+        setTotalPage(res.data.applications.last_page)
+      })
+    }
+    else{
       getAllJobs().then((res) => {
         setJobs(res.data.jobs.data)
         setTotalPage(res.data.jobs.last_page)
