@@ -33,7 +33,12 @@ const LoginSignUp = ({updateUserType}) => {
     }
     loginUser(reqObj).then((res)=>{
       console.log(res)
-      updateUserType(res.data.data.role)
+      // updateUserType(res.data.data.role)
+      if (isRecruiter) {
+        localStorage.setItem('userType', 'recruiter');
+      } else {
+        localStorage.setItem('userType', 'candidate');
+      }
       navigate('/home')
     }).catch(()=>{
       setDisplayError("Invalid Credentials!")
@@ -52,11 +57,11 @@ const LoginSignUp = ({updateUserType}) => {
       "role" : isRecruiter ? "recruiter" : "candidate"
     }
     registerUser(reqObj).then((res)=>{
-      console.log(res)
+      console.log(res.data)
       updateUserType(res.data.data.role)
       navigate('/home')
-    }).catch(()=>{
-      setDisplayError("Email already exist!")
+    }).catch((err)=>{
+      setDisplayError(err.message)
     })
   }
 
