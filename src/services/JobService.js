@@ -49,3 +49,6 @@ export const updateJobStatus = (id,data) => {
 export const getListOfApplicants = (id) => {
     return axios.get(apiUrl + '/jobs/applications/' + id, { withCredentials: true })
 }
+export const updateApplicationStatus = (id, data) => {
+    return axios.post(apiUrl + '/application/update/' + id, data, { withCredentials: true })
+}

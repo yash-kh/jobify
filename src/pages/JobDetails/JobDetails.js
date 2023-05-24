@@ -1,6 +1,6 @@
 import { Button, Col, Container, Row, Form, Accordion, Card } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
-import { applyByJobId, getListOfApplicants, updateJobStatus } from "../../services/JobService";
+import { applyByJobId, getListOfApplicants, updateApplicationStatus, updateJobStatus } from "../../services/JobService";
 import { useEffect, useState } from "react";
 
 const JobDetails = () => {
@@ -17,11 +17,10 @@ const JobDetails = () => {
   const [accordionOpen, setAccordionOpen] = useState(false);
   const [applicants, setApplicants] = useState([]);
   const jobId = id;
+
   const handleStatusChange = (event) => {
     const newStatus = event.target.value;
     setSelectedStatus(newStatus);
-
-
     updateJobStatus(jobId, { status: newStatus })
     navigator('/postedjobs')
     alert("Status changed successfully!!!")
@@ -34,25 +33,50 @@ const JobDetails = () => {
     }).catch(err => {
       console.log(err);
     })
-  }; 
-    useEffect(() => {
-      if (user === "recruiter") {
-        fetchApplicantsData()      
-      }
-    },[])
-    console.log(applicants);
+  };
+  useEffect(() => {
+    if (user === "recruiter") {
+      fetchApplicantsData()
+    }
+  }, [])
+  // console.log(applicants);
+
   const handleApplicantsClick = () => {
     setAccordionOpen(!accordionOpen);
   };
+
   const apply = () => {
     applyByJobId(id).then(() => {
       alert('Applied successfully!')
-      navigator('/jobs')
+      navigator('/jobDetails')
     }).catch((err) => {
       setDisplayError('Already applied to this Job!')
       console.log(err)
     })
   }
+
+  const handleStatusUpdate = (applicationId, newStatus) => {
+    // Get the current status of the application
+    const currentStatus = applicants.find(applicant => applicant.id === applicationId)?.status;
+
+    // Check if the new status is different from the current status
+    if (currentStatus !== newStatus) {
+      updateApplicationStatus(applicationId, newStatus)
+        .then((response) => {
+          // Update the status in the client-side state
+          setApplicants((prevApplicants) =>
+            prevApplicants.map((applicant) =>
+              applicant.id === applicationId ? { ...applicant, status: newStatus } : applicant
+            )
+          );
+          console.log(applicants);
+        })
+        .catch((error) => {
+          console.log("Error updating application status:", error);
+        });
+    }
+  };
+ 
 
   return (
     <Container>
@@ -102,51 +126,63 @@ const JobDetails = () => {
           <Col>
             <Button variant="info" onClick={handleApplicantsClick}><em><b>See the List of Applicants</b></em></Button>
 
-            {accordionOpen  ?
+            {accordionOpen ?
               <>
                 <h5 style={{ marginTop: "10px" }}>Applications ({applicants.length})</h5>
                 <Accordion style={{ marginTop: "15px", marginBottom: "50px" }}>
                   {applicants && applicants.map((applicant, id) => (
                     <Accordion.Item eventKey={id}>
                       <Accordion.Header>{applicant.candidate.name}</Accordion.Header>
-                      <Accordion.Body style={{ display: "flex", justifyContent: "space-between" }}>
-                        {applicant.candidate.email}
-                        <div>
-                          {applicant.status === "approved" ?
-                            (<>
-                              <p>Approved</p>
-                              <Button style={{ marginRight: "10px" }} variant="dark" disabled>Accept</Button>
-                              <Button variant="dark">Reject</Button>
-                            </>)
-                            : applicant.status === "rejected" ? (
-                              <>
-                                <p>Rejected</p>
-                                <Button style={{ marginRight: "10px" }} variant="dark">Accept</Button>
-                                <Button variant="dark" disabled>Reject</Button>
-                              </>
-                            ) :
-                              <>
-                                <Button style={{ marginRight: "10px" }} variant="dark">Accept</Button>
-                                <Button variant="dark">Reject</Button>
-                              </>
-                          }
+                      <Accordion.Body >
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                          <div>
+                            <b>EMAIL ID : </b>{applicant.candidate.email}
+                          </div>
+                          <div style={{display: "flex", gap:4 }}>
+                            {applicant.status === "approved" ?
+                              (<>
+                                <p>Approved</p>
+                                {/* <Button  variant="dark" disabled>Accept</Button>
+                                <Button variant="dark">Reject</Button> */}
+                              </>)
+                              : applicant.status === "rejected" ? (
+                                <>
+                                  <p>Rejected</p>
+                                  {/* <Button  variant="dark" >Accept</Button>
+                                  <Button variant="dark" disabled>Reject</Button> */}
+                                </>
+                              ) :
+                                <>
+                                  <Button variant="dark" onClick={handleStatusUpdate(applicant.id, "approved")}>Accept</Button>
+                                  <Button variant="dark" onClick={handleStatusUpdate(applicant.id, "rejected")}>Reject</Button>
+                                </>
+                            }
+                          </div>
 
                         </div>
                         {/* {applicant.candidate.candidates && applicant.candidate.candidates.map(info => ( */}
-                          <>
-                            <p>{applicant.candidate.candidates.current_employer}</p>
-                            <p>{applicant.candidate.candidates.location}</p>
-                            <p>{applicant.candidate.candidates.designation}</p>
-                            <p>{applicant.candidate.candidates.total_experience}</p >
-                            <p> {applicant.candidate.candidates.current_salary}</p>
-                            <p>{applicant.candidate.candidates.exp_salary}</p>
-                            <p>{applicant.candidate.candidates.notice_period}</p>
-                            {applicant.candidate.candidates.skills && applicant.candidate.candidates.skills.map(skill => (
-                              <span>{skill.skill}</span>
-                            ))}
-                          </>
+                        <>
+                          <p><b>CURRENT EMPLOYER : </b>{applicant.candidate.candidates.current_employer}</p>
+                          <p><b>LOCATION : </b>{applicant.candidate.candidates.location}</p>
+                          <p><b>DESIGNATION : </b>{applicant.candidate.candidates.designation}</p>
+                          <p><b>TOTAL EXPERIENCE : </b>{applicant.candidate.candidates.total_experience} YEARS</p >
+                          <p><b>CURRENT SALARY : </b> {applicant.candidate.candidates.current_salary} LPA</p>
+                          <p><b>EXPECTED SALARY : </b>{applicant.candidate.candidates.exp_salary} LPA</p>
+                          <p><b>NOTICE PERIOD : </b>{applicant.candidate.candidates.notice_period} DAYS</p>
+                          {applicant.candidate.candidates.skills && (
+                            <div>
+                              <b>SKILLS: </b>
+                              {applicant.candidate.candidates.skills.map((skill, index) => (
+                                <span key={skill.id}>
+                                  {skill.skill}
+                                  {index !== applicant.candidate.candidates.skills.length - 1 && ", "}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </>
                         {/* ))} */}
-                        
+
                       </Accordion.Body>
                     </Accordion.Item>
                   ))}

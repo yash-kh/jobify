@@ -74,14 +74,27 @@ const LoginSignUp = ({updateUserType}) => {
       "role" : isRecruiter ? "recruiter" : "candidate"
     }
     registerUser(reqObj).then((res)=>{
-      console.log(res)
-      localStorage.setItem('currentUser',isRecruiter ? "recruiter" : "candidate")
-      updateUserType(res.data.data.role)
-      isRecruiter ? navigate('/postedJobs') : navigate('/jobs')
-    }).catch((err)=>{
-      console.log(err)
-      setDisplayError("Email already exist!")
+      console.log(res)// Perform login after successful registration
+      const loginReqObj = {
+        email: email,
+        password: pass,
+        role: isRecruiter ? "recruiter" : "candidate",
+      };
+      return loginUser(loginReqObj);
     })
+      .then((res) => {
+        // console.log(res);
+        localStorage.setItem(
+          "currentUser",
+          isRecruiter ? "recruiter" : "candidate"
+        );
+        updateUserType(res.data.data.role);
+        isRecruiter ? navigate("/postedJobs") : navigate("/jobs");
+      })
+      .catch((err) => {
+        console.log(err);
+        setDisplayError("Email already exists!");
+      });      
   }
 
   function validateString(str) {
