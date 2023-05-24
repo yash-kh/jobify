@@ -57,6 +57,16 @@ const LoginSignUp = ({updateUserType}) => {
       setDisplayError("Password does not match")
       return
     }
+
+    if (!validateString(pass)) {
+      setDisplayError(`Password must include \n
+      1 Uppercase character, \n
+      1 Lowercase character, \n
+      special character @$!%#?&, \n
+      and min 8 Length`)
+      return
+    }
+
     let reqObj = {
       "name": userName,
       "email" : email,
@@ -72,6 +82,11 @@ const LoginSignUp = ({updateUserType}) => {
       console.log(err)
       setDisplayError("Email already exist!")
     })
+  }
+
+  function validateString(str) {
+    const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[@$!%#?&]).{8,}$/;
+    return regex.test(str);
   }
 
   return (
