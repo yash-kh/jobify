@@ -28,7 +28,6 @@ const JobDetails = () => {
 
   const fetchApplicantsData = () => {
     getListOfApplicants(jobId).then(res => {
-      // console.log(res)
       setApplicants(res.data.applications)
     }).catch(err => {
       console.log(err);
@@ -39,12 +38,11 @@ const JobDetails = () => {
       fetchApplicantsData()
     }
   }, [])
-  // console.log(applicants);
-
+  
   const handleApplicantsClick = () => {
     setAccordionOpen(!accordionOpen);
   };
-
+  
   const apply = () => {
     applyByJobId(id).then(() => {
       alert('Applied successfully!')
@@ -54,28 +52,16 @@ const JobDetails = () => {
       console.log(err)
     })
   }
+  const [applicationStatus, setApplicationStatus] = useState(applicants.status)  
 
-  const handleStatusUpdate = (applicationId, newStatus) => {
-    // Get the current status of the application
-    const currentStatus = applicants.find(applicant => applicant.id === applicationId)?.status;
-
-    // Check if the new status is different from the current status
-    if (currentStatus !== newStatus) {
-      updateApplicationStatus(applicationId, newStatus)
-        .then((response) => {
-          // Update the status in the client-side state
-          setApplicants((prevApplicants) =>
-            prevApplicants.map((applicant) =>
-              applicant.id === applicationId ? { ...applicant, status: newStatus } : applicant
-            )
-          );
-          console.log(applicants);
-        })
-        .catch((error) => {
-          console.log("Error updating application status:", error);
-        });
-    }
-  };
+  
+  const handleApplicationStatusChange = (event,id) => {
+    const newStatus = event.target.value;
+    setApplicationStatus(newStatus);
+    updateApplicationStatus(id, { status: newStatus })
+    // navigator('/jobDetails')
+    alert("Status changed successfully!!!")
+  }
  
 
   return (
@@ -138,29 +124,19 @@ const JobDetails = () => {
                           <div>
                             <b>EMAIL ID : </b>{applicant.candidate.email}
                           </div>
-                          <div style={{display: "flex", gap:4 }}>
-                            {applicant.status === "approved" ?
-                              (<>
-                                <p>Approved</p>
-                                {/* <Button  variant="dark" disabled>Accept</Button>
-                                <Button variant="dark">Reject</Button> */}
-                              </>)
-                              : applicant.status === "rejected" ? (
-                                <>
-                                  <p>Rejected</p>
-                                  {/* <Button  variant="dark" >Accept</Button>
-                                  <Button variant="dark" disabled>Reject</Button> */}
-                                </>
-                              ) :
-                                <>
-                                  <Button variant="dark" onClick={handleStatusUpdate(applicant.id, "approved")}>Accept</Button>
-                                  <Button variant="dark" onClick={handleStatusUpdate(applicant.id, "rejected")}>Reject</Button>
-                                </>
-                            }
+                          <div style={{display: "flex", gap:4 }}>                            
+                            <Form.Control
+                              as="select"
+                              value={applicationStatus}
+                              onChange={(e) => handleApplicationStatusChange(e,applicant.id)}
+                              style={{ width: "fit-content" }}>
+                              <option value="applied" disabled>Status</option>
+                              <option value="approved">Approved</option>
+                              <option value="rejected">Rejected</option>
+                            </Form.Control>
                           </div>
 
                         </div>
-                        {/* {applicant.candidate.candidates && applicant.candidate.candidates.map(info => ( */}
                         <>
                           <p><b>CURRENT EMPLOYER : </b>{applicant.candidate.candidates.current_employer}</p>
                           <p><b>LOCATION : </b>{applicant.candidate.candidates.location}</p>
