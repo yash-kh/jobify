@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { getAllSkills } from '../../services/JobService';
-import { updateProfile } from '../../services/infoUpdate';
+import { getProfileInfo, updateProfile } from '../../services/infoUpdate';
 import { useNavigate } from 'react-router-dom';
 
 const UpdateProfile = () => {
@@ -17,6 +17,28 @@ const UpdateProfile = () => {
                 skills.push({ value: item.id, label: item.skill })
             })
             setAllSkills(skills)
+        }).catch((err) => {
+            console.log(err)
+        })
+
+        getProfileInfo().then((res)=>{
+            let userData = res.data.candidate_info
+            let skills = []
+            userData.skills.forEach((item) => {
+                skills.push({ value: item.id, label: item.skill })
+            })
+            let data = {
+                "current_employer": userData.current_employer,
+                "location": userData.location,
+                "designation": userData.designation,
+                "total_experience": userData.total_experience,
+                "notice_period": userData.notice_period,
+                "current_salary": userData.current_salary,
+                "exp_salary": userData.exp_salary,
+                "skills": skills,
+            };
+            setFormData(data)
+            console.log(data)
         }).catch((err) => {
             console.log(err)
         })
@@ -88,7 +110,6 @@ const UpdateProfile = () => {
         e.preventDefault();
         // if (isFormValid()) {
         // Handle form submission logic here
-        console.log(formData);
         // Reset the form fields
         let data = {
             "current_employer": formData.current_employer,
@@ -186,6 +207,7 @@ const UpdateProfile = () => {
                     <Form.Label>Skills</Form.Label>
                     <Select
                         name="skills"
+                        value={formData.skills}
                         isMulti
                         onChange={(choice) => setUserChoice(choice)}
                         isInvalid={formErrors.skills}

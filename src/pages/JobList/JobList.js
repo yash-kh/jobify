@@ -4,7 +4,6 @@ import { getAllJobs, getAppliedByPage, getAppliedJobs, getJobsByPage, getRecomen
 import { useNavigate } from 'react-router-dom';
 
 const JobList = ({type}) => {
-
   const [lastPage, setLastPage] = useState(1)
   const [totalPage, setTotalPage] = useState(0)
   const [jobs, setJobs] = useState([])
@@ -17,7 +16,7 @@ const JobList = ({type}) => {
         setTotalPage(res.data.applications.last_page)
       })
     }
-    if(type === 'specialJobs'){      
+    else if(type === 'specialJobs'){      
       getRecomendedJobs().then((res) => {
         setJobs(res.data.jobs)
         setTotalPage(1)
@@ -64,10 +63,10 @@ const JobList = ({type}) => {
           <h1 className='py-4 px-1'>Job Listings</h1>
           <ListGroup>
             {jobs.map(job => (
-              <ListGroup.Item role='button' onClick={job.job ? null : ()=>goToJob(job)} key={job.id} style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)' }}>
+              <ListGroup.Item role='button' onClick={type === "appliedJobs" ? null : ()=>goToJob(job)} key={job.id} style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)' }}>
                 <h4 style={{ color: '#333' }}>{job.title || job.job.title}</h4>
                 <p style={{ color: '#666' }}>{job.company || job.job.company}</p>
-                {job.job ? <div>
+                {type === "appliedJobs" ? <div>
                   <p style={{ color: '#666' }}>{'status: ' + job.status}</p>
                   <p style={{ color: '#666' }}>{'applied: ' + new Date(job.created_at).toDateString()}</p>
                   <p style={{ color: '#666' }}>{'updated: ' + new Date(job.updated_at).toDateString()}</p>
