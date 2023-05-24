@@ -12,13 +12,13 @@ const JobList = ({type}) => {
   useEffect(() => {
     if(type === 'appliedJobs'){      
       getAppliedJobs().then((res) => {
-        setJobs(res.data.applications.data)
+        setJobs(res.data.applications.data || [])
         setTotalPage(res.data.applications.last_page)
       })
     }
     else if(type === 'specialJobs'){      
       getRecomendedJobs().then((res) => {
-        setJobs(res.data.jobs)
+        setJobs(res.data.jobs || [])
         setTotalPage(1)
       }).catch((err)=>{
         alert('Update profile details to see recomeded jobs!')
@@ -27,7 +27,7 @@ const JobList = ({type}) => {
     }
     else{
       getAllJobs().then((res) => {
-        setJobs(res.data.jobs.data)
+        setJobs(res.data.jobs.data || [])
         setTotalPage(res.data.jobs.last_page)
       })
     }
