@@ -51,7 +51,7 @@ const AppNavBar = ({ updateUserType, userType }) => {
                                 {userType === 'recruiter' ? <NavDropdown.Item as={Link} to="/createJob">Create Jobs</NavDropdown.Item> : null}
                                 {userType === 'candidate' ? <NavDropdown.Item as={Link} to="/appliedJobs">Applied Jobs</NavDropdown.Item> : null}
                             </NavDropdown> : null}
-                                {userType === 'recruiter' ? <Nav.Link as={Link} to="/addSkills">Add Skills</Nav.Link> : null}
+                                {/* {userType === 'recruiter' ? <Nav.Link as={Link} to="/addSkills">Add Skills</Nav.Link> : null} */}
                                 {userType === 'candidate' ? <Nav.Link as={Link} to="/updateProfile">Update Profile</Nav.Link> : null}
                             {userType !== undefined ? <Nav.Link as={Link} to="/" onClick={()=>updateUserType(localStorage.removeItem('currentUser'))}>Log out</Nav.Link> : null}
                         </Nav>

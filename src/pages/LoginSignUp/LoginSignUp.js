@@ -34,7 +34,7 @@ const LoginSignUp = ({updateUserType}) => {
     loginUser(reqObj).then((res)=>{
       localStorage.setItem('currentUser',isRecruiter ? "recruiter" : "candidate")
       updateUserType(res.data.data.role)
-      isRecruiter ? navigate('/home') : navigate('/jobs')
+      isRecruiter ? navigate('/postedJobs') : navigate('/jobs')
     }).catch(()=>{
       setDisplayError("Invalid Credentials!")
     })

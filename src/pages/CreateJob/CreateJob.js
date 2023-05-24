@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import { createJob, getAllSkills } from '../../services/JobService';
+import { useNavigate } from 'react-router';
 
 const JobForm = () => {
 
@@ -10,7 +11,7 @@ const JobForm = () => {
         // { value: 'strawberry', label: 'Strawberry' },
         // { value: 'vanilla', label: 'Vanilla' }
     ])
-
+const navigate = useNavigate()
     useEffect(() => {
         getAllSkills().then((res) => {
             let skills = []
@@ -86,7 +87,8 @@ const JobForm = () => {
             }
             formData.skills.forEach(item => reqObj.skillIds.push(item.value))
             createJob(reqObj).then(() => {
-                setDisplayError('Job added succesfully!')
+                alert('Job added succesfully!')
+                navigate('/postedJobs')
                 // Reset the form fields
                 setFormData(resetForm())
             }).catch((err) => {

@@ -1,4 +1,4 @@
-import { Button, Col, Container, Row,Form } from "react-bootstrap";
+import { Button, Col, Container, Row,Form, Accordion, Card } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { applyByJobId, updateJobStatus } from "../../services/JobService";
 import { useState } from "react";
@@ -8,13 +8,14 @@ const JobDetails = () => {
   const navigator = useNavigate();
   const user = localStorage.getItem('currentUser')
   let { id, title, description, company, location, min_salary, max_salary, min_exp, max_exp, notice, created_at } = locationn.state;
-  console.log(locationn.state);
+  // console.log(locationn.state);
   const [selectedStatus, setSelectedStatus] = useState(locationn.state.status);
   created_at = new Date(created_at).toDateString()
 
+  const [accordionOpen, setAccordionOpen] = useState(false);
+  const [applicants, setApplicants] = useState([]);
+  
   const handleStatusChange = (event) => {
-    // setSelectedStatus(event.target.value);
-    // You can call an API or perform any other actions here to update the status on the server
     const newStatus = event.target.value;
     setSelectedStatus(newStatus);
 
@@ -23,6 +24,20 @@ const JobDetails = () => {
     updateJobStatus(jobId, { status: newStatus })
     navigator('/postedjobs')
     alert("Status changed successfully!!!")
+  };
+
+  const handleApplicantsClick = () => {
+    // Make API call to fetch the number of applicants
+    // Update the state with the response data
+    const dummy = [
+      { id: 1, name: "John Doe" },
+      { id: 2, name: "Jane Smith" },
+      { id: 3, name: "Mike Johnson" },
+    ];
+    setApplicants(dummy/* Number of applicants from the API response */);
+
+    // Toggle the accordion open/close state
+    setAccordionOpen(!accordionOpen);
   };
   const apply = () => {
     applyByJobId(id).then(() => {
@@ -70,7 +85,31 @@ const JobDetails = () => {
             <Button variant="primary" onClick={apply}>Apply</Button>
           </Col>
         </Row>
-        : ""}
+        : 
+        <Row>
+          <Col>
+            <Button variant="info" onClick={handleApplicantsClick}><em><b>See the List of Applicants</b></em></Button>
+          
+            {accordionOpen ?
+            <Accordion style={{marginTop: "15px", marginBottom: "50px"}}>
+              {applicants.map((applicant,id) => (
+                <Accordion.Item eventKey={id}>
+                  <Accordion.Header>{applicant.id}</Accordion.Header>
+                    <Accordion.Body style={{display: "flex", justifyContent : "space-between"}}>
+                    {applicant.name}
+                    <div>
+                    <Button style={{marginRight: "10px"}} variant="dark">Accept</Button>
+                    <Button variant="dark">Reject</Button>
+                    </div>
+                    </Accordion.Body>                  
+                </Accordion.Item>
+              ))}
+              </Accordion>
+             : ""}
+            
+          </Col>
+        </Row>
+        }
     </Container>
   );
 }
