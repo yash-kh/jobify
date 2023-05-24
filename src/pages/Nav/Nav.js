@@ -37,7 +37,7 @@ const AppNavBar = ({ updateUserType, userType }) => {
                             style={{ maxHeight: '100px' }}
                             navbarScroll
                         >
-                            {userType !== undefined ? <NavDropdown title="Jobs" id="navbarScrollingDropdown">
+                            {userType ? <NavDropdown title="Jobs" id="navbarScrollingDropdown">
                                 {userType === 'recruiter' ? <NavDropdown.Item as={Link} to="/postedJobs">
                                     Posted Jobs
                                 </NavDropdown.Item> : null}

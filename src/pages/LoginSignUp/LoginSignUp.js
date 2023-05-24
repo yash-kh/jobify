@@ -10,6 +10,14 @@ import { loginUser, registerUser } from "../../services/LoginService"
 const LoginSignUp = ({updateUserType}) => {
 
   const navigate = useNavigate()
+
+  if(localStorage.getItem('currentUser') === 'candidate'){
+    navigate('/jobs')
+  }
+  else if(localStorage.getItem('currentUser') === 'recruiter'){
+    navigate('/postedJobs')
+  }
+
   let [islogin, setIsLogin] = useState(true)
   let [isRecruiter, setIsRecruiter] = useState(false)
   let [confirmPass, setConfirmPass] = useState('')
@@ -41,10 +49,24 @@ const LoginSignUp = ({updateUserType}) => {
   }
   
   const signUp = () => {
-    if(!userName || !email || !pass) {
+    if(!userName || !email || !pass || !confirmPass) {
       setDisplayError("Name, Email and Password are required!")
       return
     }
+    if(pass !== confirmPass){
+      setDisplayError("Password does not match")
+      return
+    }
+
+    if (!validateString(pass)) {
+      setDisplayError(`Password must include \n
+      1 Uppercase character, \n
+      1 Lowercase character, \n
+      special character @$!%#?&, \n
+      and min 8 Length`)
+      return
+    }
+
     let reqObj = {
       "name": userName,
       "email" : email,
@@ -55,10 +77,16 @@ const LoginSignUp = ({updateUserType}) => {
       console.log(res)
       localStorage.setItem('currentUser',isRecruiter ? "recruiter" : "candidate")
       updateUserType(res.data.data.role)
-      isRecruiter ? navigate('/home') : navigate('/jobs')
-    }).catch(()=>{
+      isRecruiter ? navigate('/postedJobs') : navigate('/jobs')
+    }).catch((err)=>{
+      console.log(err)
       setDisplayError("Email already exist!")
     })
+  }
+
+  function validateString(str) {
+    const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[@$!%#?&]).{8,}$/;
+    return regex.test(str);
   }
 
   return (
