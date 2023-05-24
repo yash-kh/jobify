@@ -16,8 +16,8 @@ export const PostedJob = (props) => {
         getJobsPostedByRecruiter().then((res) => {
             setJobs(res.data.jobs.data)
             setTotalPage(res.data.jobs.last_page)
-            console.log(res.data.jobs)
-            console.log(totalPage, lastPage)
+            // console.log(res.data.jobs)
+            // console.log(totalPage, lastPage)
         })
     }, []);
 

@@ -11,3 +11,4 @@ export const updateProfile = (data) => {
 export const getProfileInfo = () => {
     return axios.get(apiUrl + '/profile_info', { withCredentials: true })
 }
+

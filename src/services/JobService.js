@@ -46,3 +46,6 @@ export const getJobsPostedByRecruiter = (data) => {
 export const updateJobStatus = (id,data) => {
     return axios.patch(apiUrl + '/job/update_status/'+ id, data, { withCredentials: true })
 }
+export const getListOfApplicants = (id) => {
+    return axios.get(apiUrl + '/jobs/applications/' + id, { withCredentials: true })
+}
