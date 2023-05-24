@@ -46,7 +46,7 @@ const JobDetails = () => {
   const apply = () => {
     applyByJobId(id).then(() => {
       alert('Applied successfully!')
-      navigator('/jobDetails')
+      navigator('/jobs')
     }).catch((err) => {
       setDisplayError('Already applied to this Job!')
       console.log(err)
