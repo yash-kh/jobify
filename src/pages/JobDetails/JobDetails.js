@@ -34,10 +34,13 @@ const JobDetails = () => {
     }).catch(err => {
       console.log(err);
     })
-  };
-  useEffect = () => {
-    fetchApplicantsData()
-  }
+  }; 
+    useEffect(() => {
+      if (user === "recruiter") {
+        fetchApplicantsData()      
+      }
+    },[])
+    console.log(applicants);
   const handleApplicantsClick = () => {
     setAccordionOpen(!accordionOpen);
   };
@@ -99,9 +102,9 @@ const JobDetails = () => {
           <Col>
             <Button variant="info" onClick={handleApplicantsClick}><em><b>See the List of Applicants</b></em></Button>
 
-            {accordionOpen ?
+            {accordionOpen  ?
               <>
-                <h5 style={{ marginTop: "10px" }}>Applications ({applicants && applicants.length})</h5>
+                <h5 style={{ marginTop: "10px" }}>Applications ({applicants.length})</h5>
                 <Accordion style={{ marginTop: "15px", marginBottom: "50px" }}>
                   {applicants && applicants.map((applicant, id) => (
                     <Accordion.Item eventKey={id}>
@@ -129,20 +132,20 @@ const JobDetails = () => {
                           }
 
                         </div>
-                        {applicant.candidates && applicant.candidates.map(info => (
+                        {/* {applicant.candidate.candidates && applicant.candidate.candidates.map(info => ( */}
                           <>
-                            <p>{info.current_employer}</p>
-                            <p>{info.location}</p>
-                            <p>{info.designation}</p>
-                            <p>{info.total_experience}</p >
-                            <p> {info.current_salary}</p>
-                            <p>{info.exp_salary}</p>
-                            <p>{info.notice_period}</p>
-                            {info.skills && info.skills.map(skill => (
+                            <p>{applicant.candidate.candidates.current_employer}</p>
+                            <p>{applicant.candidate.candidates.location}</p>
+                            <p>{applicant.candidate.candidates.designation}</p>
+                            <p>{applicant.candidate.candidates.total_experience}</p >
+                            <p> {applicant.candidate.candidates.current_salary}</p>
+                            <p>{applicant.candidate.candidates.exp_salary}</p>
+                            <p>{applicant.candidate.candidates.notice_period}</p>
+                            {applicant.candidate.candidates.skills && applicant.candidate.candidates.skills.map(skill => (
                               <span>{skill.skill}</span>
                             ))}
                           </>
-                        ))}
+                        {/* ))} */}
                         
                       </Accordion.Body>
                     </Accordion.Item>
